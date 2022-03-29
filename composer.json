@@ -1,0 +1,10 @@
+{
+    "name": "ocdladefense/mw-featured-content",
+    "type": "wordpress-theme",
+    "description": "A MediaWiki extension for displaying featured content.",
+    "require": {
+        "ocdladefense/lib-database":"~1.0",
+        "ocdladefense/lib-php-template":"dev-development",
+        "ocdladefense/lib-date":"dev-development"
+    }
+}
