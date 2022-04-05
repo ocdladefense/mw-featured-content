@@ -1,18 +1,14 @@
 <?php
-
-    $content = "Example content.";
+/**
+ * $page = A page to be listed amongst featured pages.
+ */
 ?>
 
 
-<div class="mw-featured">
 
-    <h2>
-        <a href=''>
-            <?php print $title; ?>
+
+    <li class="mw-featured">
+        <a href="https://lod.ocdla.org/<?php print $page->page_title; ?>">
+            <?php print $page->page_title; ?>
         </a>
-    </h2>
-    <div class="car-summary-header">
-        <?php print $content; ?>
-    </div>
-
-</div>
+    </li>

@@ -13,11 +13,6 @@ class SpecialFeaturedContent extends SpecialPage {
 	
     public function __construct() {
 
-		global $wgCaseReviewsDBtype;
-		global $wgCaseReviewsDBserver;
-		global $wgCaseReviewsDBname;
-		global $wgCaseReviewsDBuser;
-		global $wgCaseReviewsDBpassword;
 
         parent::__construct("FeaturedContent");
 
@@ -48,8 +43,11 @@ class SpecialFeaturedContent extends SpecialPage {
 
     public function execute($params) {
 
-		// global $wgOcdlaCaseReviewsDefaultRecordLimit;
+		global $wgOcdlaFeaturedContentEditor,
 
+		$wgOcdlaFeaturedContentTitle;
+
+		$wgOcdlaFeaturedContentTitle = !empty($wgOcdlaFeaturedContentTitle) ? $wgOcdlaFeaturedContentTitle : "RECENT LOD UPDATES";
 
 		$params = empty($params) ? "50" : $params;
 
@@ -60,22 +58,34 @@ class SpecialFeaturedContent extends SpecialPage {
 
 		$template = __DIR__ . "/templates/featured.tpl.php";
 
-		if(!$this->including()) {
+		if(!$this->including()) {}
 
-			
-		}
 		$this->db = wfGetDB(DB_SLAVE);
 
-		// Define a subject query, too.
-		// $query = "SELECT court, year, month, day, published_date, subject, secondary_subject FROM car WHERE COALESCE(is_draft, 0) != 1 ORDER BY year DESC, month DESC, day DESC LIMIT {$numRows}";
 		$pages = $this->getRecentPages();
 
 		// var_dump($pages);exit;
-		$html = "<h2>RECENT UPDATES</h2>";//$this->getHTML();
+		$html = "<h2>$wgOcdlaFeaturedContentTitle</h2>";
+		$counter = 0;
 		foreach($pages as $page) {
-			$html .= "<div class='featured'>{$page->page_title}</div>";
+			$html .= Template::render($template,array("page"=>$page));
+			
+			if($counter++ == 0) {
+				$title 		= Title::makeTitle( $page->page_namespace, $page->page_title );
+				$revision 	= Revision::newFromTitle( $title );
+				$text 		= $revision->getText();	
+			}
 		}
-		$output->addHTML($html);
+		// var_dump($text);exit;
+		/*
+		foreach($rows as $row) {
+			$title 		= Title::makeTitle( $row->page_namespace, $row->page_title );
+			$revision 	= Revision::newFromTitle( $title );
+			$text 		= $revision->getText();
+		}
+		*/
+		$html = str_replace(array("\r", "\n"), '', $html);
+		$output->addHTML("<ul>{$html}</ul>");
     }
 
 
@@ -83,7 +93,7 @@ class SpecialFeaturedContent extends SpecialPage {
 	protected function getRecentPages($d1 = null) {
 
 		$db = new Database();
-		$query = "SELECT page_namespace, page_id, page_title, page_touched FROM page WHERE page_title NOT LIKE '%jpg%' AND page_title NOT LIKE  '%jpeg%' AND page_title NOT LIKE 'Case_Review%' AND page_namespace = 0 ORDER BY  page_touched DESC limit 25";
+		$query = "SELECT page_namespace, page_id, page_title, page_touched FROM page WHERE page_namespace = 0 AND page_title NOT IN('Main_Page','Welcome_to_The_Library') AND page_title NOT LIKE '%jpg%' AND page_title NOT LIKE '%jpeg%' AND page_title NOT LIKE 'Case_Review%' AND page_title NOT LIKE '%Local%' ORDER BY page_touched DESC limit 25";
 
 		$result = $db->query($query);
 		$page_ids = array();
@@ -91,7 +101,11 @@ class SpecialFeaturedContent extends SpecialPage {
 			$page_ids []= $record["page_id"];
 		}
 
-		return $this->loadMediaWikiPages($page_ids);
+		$rows = $this->loadMediaWikiPages($page_ids);
+
+		return $rows;
+
+
 	}
 
 
