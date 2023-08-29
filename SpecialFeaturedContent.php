@@ -86,7 +86,7 @@ class SpecialFeaturedContent extends SpecialPage {
 	protected function getRecentPages() {
 
 		$db = new Database();
-		$query = "SELECT page_namespace, page_id, page_title, page_touched FROM page WHERE page_namespace = 0 AND page_title NOT IN('Main_Page','Welcome_to_The_Library') AND page_title NOT LIKE '%jpg%' AND page_title NOT LIKE '%jpeg%' AND page_title NOT LIKE 'Case_Review%' AND page_title NOT LIKE '%Local%' ORDER BY page_touched DESC LIMIT 25";
+		$query = "SELECT page_namespace, page_id, page_title, page_touched FROM page WHERE page_namespace = 0 AND page_title NOT IN('Main_Page','Welcome_to_The_Library') AND page_title NOT LIKE '%jpg%' AND page_title NOT LIKE '%jpeg%' AND page_title NOT LIKE 'Case_Review%' AND page_namespace != 2 AND page_title NOT LIKE '%Local%' ORDER BY page_touched DESC LIMIT 25";
 
 		$result = $db->query($query);
 		$page_ids = array();
